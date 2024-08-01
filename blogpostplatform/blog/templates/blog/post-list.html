@@ -5,6 +5,12 @@
     <title>My Blog</title>
 </head>
 <body>
+    {% if user.is_authenticated %}
+        <div>
+            <a href="{% url 'create_post' %}">Create New Post</a>
+        </div>
+    {% endif %}
+
     {% for post in posts %}
         <div>
             <h5>{{ post.title }}</h5>
