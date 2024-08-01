@@ -9,7 +9,7 @@
         <div>
             <h5>{{ post.title }}</h5>
             <p>{{ post.content|truncatewords:50 }}</p>
-            <a href="#">Read More</a>
+            <a href="{% url 'post_detail' post.slug %}">Read More</a>
         </div>
 
         <div>
