@@ -1,8 +1,9 @@
-from .models import Post
-from .forms import PostForm
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import Post
+from .forms import PostForm
 
 def post_list(request):
     posts = Post.objects.all()
@@ -35,3 +36,17 @@ def create_post(request):
     else:
         form = PostForm()
     return render(request, 'blog/post-create.html', {'form': form})
+
+
+@login_required
+def delete_post(request, slug):
+    post = get_object_or_404(Post, slug=slug)
+
+    # Ensure the logged-in user is the author of the post
+    if request.user == post.author:
+        post.delete()
+        messages.success(request, "Post deleted successfully!")
+        return redirect('post_list')
+    else:
+        messages.error(request, "You don't have permission to delete this post.")
+        return redirect('post_detail', slug=post.slug)
