@@ -25,5 +25,11 @@
         </div>
     {% endfor %}
 
+    <h2>Leave comment</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ comment_form.as_p }}
+        <button type="submit">Publish</button>
+    </form>
 </body>
 </html>
