@@ -11,7 +11,9 @@ def post_list(request):
 
 def post_detail(request, slug):
     post = get_object_or_404(Post, slug=slug)
-    return render(request, 'blog/post-detail.html', {'post': post})
+    comments = post.comments.all()
+    return render(request, 'blog/post-detail.html', {'post': post,
+                                                                          'comments': comments })
 
 def register(request):
     if request.method == 'POST':
