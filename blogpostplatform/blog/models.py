@@ -10,6 +10,9 @@ class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     slug = models.SlugField(unique=True, blank=True)
 
+    class Meta:
+        ordering = ['date_posted']
+
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -27,6 +30,8 @@ class Comment(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
 
+    class Meta:
+        ordering = ['date_created']
 
     def __str__(self):
         return self.content
