@@ -26,6 +26,18 @@ def post_detail(request, slug):
                                                          'comments': comments,
                                                          'comment_form': comment_form})
 
+def like(request, slug):
+    post = get_object_or_404(Post, slug=slug)
+    post.likes += 1
+    post.save()
+    return redirect('post_detail', slug=slug)
+
+def dislike(request, slug):
+    post = get_object_or_404(Post, slug=slug)
+    post.dislikes += 1
+    post.save()
+    return redirect('post_detail', slug=slug)
+
 
 def register(request):
     if request.method == 'POST':

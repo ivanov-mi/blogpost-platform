@@ -7,6 +7,8 @@ class Post(models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField()
     date_posted = models.DateTimeField(auto_now_add=True)
+    likes = models.PositiveIntegerField(default=0)
+    dislikes = models.PositiveIntegerField(default=0)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     slug = models.SlugField(unique=True, blank=True)
 
@@ -19,6 +21,8 @@ class Post(models.Model):
             self.slug = slugify(self.title)
         super(Post, self).save(*args, **kwargs)
 
+    def vote(self):
+        return self.likes - self.dislikes
 
     def __str__(self):
         return self.title
