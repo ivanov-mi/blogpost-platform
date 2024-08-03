@@ -2,7 +2,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Post
+from .models import Post, Vote
 from .forms import PostForm, CommentForm
 
 def post_list(request):
@@ -25,19 +25,30 @@ def post_detail(request, slug):
     return render(request, 'blog/post-detail.html', {'post': post,
                                                          'comments': comments,
                                                          'comment_form': comment_form})
-
+@login_required
 def like(request, slug):
-    post = get_object_or_404(Post, slug=slug)
-    post.likes += 1
-    post.save()
-    return redirect('post_detail', slug=slug)
+    return __vote(request, slug, True)
 
+@login_required
 def dislike(request, slug):
-    post = get_object_or_404(Post, slug=slug)
-    post.dislikes += 1
-    post.save()
-    return redirect('post_detail', slug=slug)
+    return __vote(request, slug, False)
 
+def __vote(request, slug, is_liked):
+    post = get_object_or_404(Post, slug=slug)
+    author = request.user
+
+    current_vote = post.votes.filter(author=author)
+
+    if current_vote.exists():
+        if current_vote[0].is_liked == is_liked:
+            return redirect('post_detail', slug=slug)
+        else:
+            current_vote.delete()
+
+    new_vote = Vote.objects.create(post=post, author=author, is_liked=is_liked)
+    new_vote.save()
+
+    return redirect('post_detail', slug=slug)
 
 def register(request):
     if request.method == 'POST':

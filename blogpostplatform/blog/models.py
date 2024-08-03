@@ -7,8 +7,6 @@ class Post(models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField()
     date_posted = models.DateTimeField(auto_now_add=True)
-    likes = models.PositiveIntegerField(default=0)
-    dislikes = models.PositiveIntegerField(default=0)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     slug = models.SlugField(unique=True, blank=True)
 
@@ -21,8 +19,14 @@ class Post(models.Model):
             self.slug = slugify(self.title)
         super(Post, self).save(*args, **kwargs)
 
-    def vote(self):
-        return self.likes - self.dislikes
+    def likes(self):
+        return self.votes.filter(is_liked=True).count()
+
+    def dislikes(self):
+        return self.votes.filter(is_liked=False).count()
+
+    def score(self):
+        return self.likes() - self.dislikes()
 
     def __str__(self):
         return self.title
@@ -39,3 +43,11 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.content
+
+
+class Vote(models.Model):
+    is_liked = models.BooleanField()
+    date_created = models.DateTimeField(auto_now_add=True)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="votes")
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+

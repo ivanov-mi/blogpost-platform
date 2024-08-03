@@ -12,7 +12,7 @@
     </div>
 
     <table>
-        <th colspan="2" style="font-size:20px; font-weight:bold">Score: {{ post.vote }}</th>
+        <th colspan="2" style="font-size:20px; font-weight:bold">Score: {{ post.score }}</th>
         <tr>
             <td><a href="{% url 'like' post.slug %}"><span style="font-size:20px">+</span> ({{ post.likes }})</a></td>
             <td><a href="{% url 'dislike' post.slug %}"><span style="font-size:20px">-</span> ({{ post.dislikes }})</a></td>
