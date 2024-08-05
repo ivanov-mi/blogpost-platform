@@ -20,7 +20,7 @@
     </div>
     <p>Posted by {{ post.author }} on {{ post.date_posted }}</p>
     <div style="padding:10px">
-        {{ post.content }}
+        {{ formatted_content|safe|linebreaks}}
     </div>
 
     <table>

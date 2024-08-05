@@ -4,15 +4,26 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Post, Vote
 from .forms import PostForm, CommentForm
+from .utils import embed_links
 
-def post_list(request):
-    posts = Post.objects.all()
-    return render(request, 'blog/post-list.html', {'posts': posts})
+
+def post_list(request, **kwargs):
+    hashtag = kwargs.get('hashtag')
+
+    if not hashtag:
+        posts = Post.objects.all()
+        return render(request, 'blog/post-list.html', {'posts': posts})
+
+    posts = Post.objects.filter(hashtags__name=hashtag)
+    return render(request, 'blog/post-list.html', {'posts': posts,
+                                                                        'hashtag': hashtag})
+
 
 def post_detail(request, slug):
     post = get_object_or_404(Post, slug=slug)
     comments = post.comments.all()
     comment_form = CommentForm()
+    formatted_content = embed_links(post.content)
 
     if request.method == "POST":
         comment_form = CommentForm(request.POST)
@@ -24,7 +35,8 @@ def post_detail(request, slug):
 
     return render(request, 'blog/post-detail.html', {'post': post,
                                                          'comments': comments,
-                                                         'comment_form': comment_form})
+                                                         'comment_form': comment_form,
+                                                         'formatted_content': formatted_content})
 @login_required
 def like(request, slug):
     return __vote(request, slug, True)

@@ -19,6 +19,12 @@
         </div>
     {% endif %}
 
+    {% if hashtag %}
+    <h3>
+        <a href="{% url 'post_list'%}">#{{ hashtag }} <sub>(-)</sub></a>
+    </h3>
+    {% endif %}
+
     {% for post in posts %}
         <div>
             <h5>{{ post.title }}</h5>
