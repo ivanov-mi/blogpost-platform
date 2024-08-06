@@ -26,7 +26,6 @@ class Post(models.Model):
     class Meta:
         ordering = ['date_posted']
 
-
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
@@ -47,18 +46,21 @@ class Post(models.Model):
         # Add hashtag references to current post
         self.hashtags.set(list(existing_hashtags) + new_hashtags)
 
-
+    @property
     def likes(self):
         return self.votes.filter(is_liked=True).count()
 
+    @property
     def dislikes(self):
         return self.votes.filter(is_liked=False).count()
 
+    @property
     def score(self):
-        return self.likes() - self.dislikes()
+        return self.likes - self.dislikes
 
     def __str__(self):
         return self.title
+
 
 class Comment(models.Model):
     content = models.TextField()
@@ -78,4 +80,3 @@ class Vote(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="votes")
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-
