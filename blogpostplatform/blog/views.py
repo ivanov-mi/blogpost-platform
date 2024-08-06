@@ -17,7 +17,7 @@ def post_list(request, **kwargs):
 
     posts = Post.objects.filter(hashtags__name=hashtag)
     return render(request, 'blog/post-list.html', {'posts': posts,
-                                                                        'hashtag': hashtag})
+                                                   'hashtag': hashtag})
 
 
 def post_detail(request, slug):
@@ -36,16 +36,20 @@ def post_detail(request, slug):
             return redirect('post_detail', slug=slug)
 
     return render(request, 'blog/post-detail.html', {'post': post,
-                                                         'comments': comments,
-                                                         'comment_form': comment_form,
-                                                         'formatted_content': formatted_content})
+                                                     'comments': comments,
+                                                     'comment_form': comment_form,
+                                                     'formatted_content': formatted_content})
+
+
 @login_required
 def like(request, slug):
     return __vote(request, slug, True)
 
+
 @login_required
 def dislike(request, slug):
     return __vote(request, slug, False)
+
 
 def __vote(request, slug, is_liked):
     post = get_object_or_404(Post, slug=slug)
@@ -58,7 +62,7 @@ def __vote(request, slug, is_liked):
         post=post,
         author=request.user
     )
-    
+
     if not created:
         vote.date_created = now()
 
@@ -66,6 +70,7 @@ def __vote(request, slug, is_liked):
     vote.save()
 
     return redirect('post_detail', slug=slug)
+
 
 def register(request):
     if request.method == 'POST':
