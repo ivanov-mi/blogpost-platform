@@ -30,6 +30,7 @@ def post_detail(request, slug):
         if comment_form.is_valid():
             comment = comment_form.save(commit=False)
             comment.post = post
+            comment.author = request.user
             comment.save()
             return redirect('post_detail', slug=slug)
 

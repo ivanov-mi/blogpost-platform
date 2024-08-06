@@ -36,7 +36,7 @@ class Post(models.Model):
             return
 
         existing_hashtags = Hashtag.objects.filter(name__in=new_hashtag_names)
-        existing_hashtag_names = { existing_hashtags.values_list('name', flat=True) }
+        existing_hashtag_names = {existing_hashtags.values_list('name', flat=True)}
 
         # Create new unique hashtag objects
         unique_hashtag_names = new_hashtag_names.difference(existing_hashtag_names)
@@ -61,10 +61,9 @@ class Post(models.Model):
 
 class Comment(models.Model):
     content = models.TextField()
-    author_name = models.CharField(max_length=60)
-    email = models.EmailField()
     date_created = models.DateTimeField(auto_now_add=True)
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="author")
 
     class Meta:
         ordering = ['date_created']
