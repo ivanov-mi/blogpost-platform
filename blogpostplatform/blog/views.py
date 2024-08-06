@@ -5,6 +5,7 @@ from django.contrib import messages
 from .models import Post, Vote
 from .forms import PostForm, CommentForm
 from .utils import embed_links
+from django.utils.timezone import now
 
 
 def post_list(request, **kwargs):
@@ -48,18 +49,21 @@ def dislike(request, slug):
 
 def __vote(request, slug, is_liked):
     post = get_object_or_404(Post, slug=slug)
-    author = request.user
 
-    current_vote = post.votes.filter(author=author)
+    # Users can't vote for their own posts
+    if request.user == post.author:
+        return redirect('post_detail', slug=slug)
 
-    if current_vote.exists():
-        if current_vote[0].is_liked == is_liked:
-            return redirect('post_detail', slug=slug)
-        else:
-            current_vote.delete()
+    vote, created = Vote.objects.get_or_create(
+        post=post,
+        author=request.user
+    )
+    
+    if not created:
+        vote.date_created = now()
 
-    new_vote = Vote.objects.create(post=post, author=author, is_liked=is_liked)
-    new_vote.save()
+    vote.is_liked = is_liked
+    vote.save()
 
     return redirect('post_detail', slug=slug)
 
