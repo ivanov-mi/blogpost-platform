@@ -6,7 +6,7 @@ import uuid
 
 
 class Hashtag(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
 
     class Meta:
         ordering = ["name"]
@@ -31,12 +31,12 @@ class Post(models.Model):
             self.slug = slugify(self.title)
         super(Post, self).save(*args, **kwargs)
 
-        new_hashtag_names = get_hashtags(self.content)
+        new_hashtag_names = set(get_hashtags(self.content))
         if not new_hashtag_names:
             return
 
         existing_hashtags = Hashtag.objects.filter(name__in=new_hashtag_names)
-        existing_hashtag_names = {existing_hashtags.values_list('name', flat=True)}
+        existing_hashtag_names = set(existing_hashtags.values_list('name', flat=True))
 
         # Create new unique hashtag objects
         unique_hashtag_names = new_hashtag_names.difference(existing_hashtag_names)
