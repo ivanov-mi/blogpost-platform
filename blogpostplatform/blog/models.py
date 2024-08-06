@@ -20,7 +20,7 @@ class Post(models.Model):
     content = models.TextField()
     date_posted = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    slug = models.SlugField(unique=True, default=uuid.uuid1)
+    slug = models.SlugField(unique=True)
     hashtags = models.ManyToManyField(Hashtag, blank=True, related_name='posts')
 
     class Meta:
@@ -29,7 +29,7 @@ class Post(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
-        super(Post, self).save(*args, **kwargs)
+            super(Post, self).save(*args, **kwargs)
 
         new_hashtag_names = set(get_hashtags(self.content))
         if not new_hashtag_names:
@@ -76,7 +76,7 @@ class Comment(models.Model):
 
 
 class Vote(models.Model):
-    is_liked = models.BooleanField()
+    is_liked = models.BooleanField(null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="votes")
     author = models.ForeignKey(User, on_delete=models.CASCADE)
