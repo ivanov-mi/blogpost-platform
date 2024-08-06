@@ -69,8 +69,8 @@ def register(request):
         if form.is_valid():
             form.save()
             return redirect('post_list')
-    else:
-        form = UserCreationForm()
+
+    form = UserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
 
 
