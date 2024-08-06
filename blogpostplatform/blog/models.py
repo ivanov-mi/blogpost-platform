@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.text import slugify
 from .utils import get_hashtags
+import uuid
 
 
 class Hashtag(models.Model):
@@ -19,7 +20,7 @@ class Post(models.Model):
     content = models.TextField()
     date_posted = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    slug = models.SlugField(unique=True, blank=True)
+    slug = models.SlugField(unique=True, default=uuid.uuid1)
     hashtags = models.ManyToManyField(Hashtag, blank=True, related_name='posts')
 
     class Meta:
